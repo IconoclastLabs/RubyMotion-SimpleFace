@@ -23,22 +23,22 @@ class RootController < UIViewController
   def print_features features
 
     UIGraphicsBeginImageContextWithOptions(@me.size, true, 0)
-    @me.drawInRect(view.bounds)
+    @me.drawInRect([[0, 0], @me.size])
 
     currentContext = UIGraphicsGetCurrentContext()
 
-    #CGContextTranslateCTM(currentContext, 0, view.bounds.size.height)
-    #CGContextScaleCTM(currentContext, 1, -1)
+    CGContextTranslateCTM(currentContext, 0, @me.size.height)
+    CGContextScaleCTM(currentContext, 1, -1)
 
     scale = UIScreen.mainScreen.scale
 
-    #if (scale > 1.0)
-    #CGContextScaleCTM(currentContext, 0.5, 0.5)
-    #end
+    if (scale > 1.0)
+      CGContextScaleCTM(currentContext, 0.5, 0.5)
+    end
     
     features.each_with_index do |feature, index|
       
-      # TODO: Does this have to be inside the loop?
+      # TODO: get some of this out of the loop
       CGContextSetRGBFillColor(currentContext, 0, 0, 0, 0.5)
       CGContextSetStrokeColorWithColor(currentContext, UIColor.whiteColor.CGColor)
       CGContextSetLineWidth(currentContext, 2)
@@ -47,21 +47,27 @@ class RootController < UIViewController
 
       CGContextSetRGBFillColor(currentContext, 1, 0 , 0, 0.4)
 
-      p "Found something"
-      p "Left Eye Position = #{feature.leftEyePosition.x}" if feature.hasLeftEyePosition
-      p "Right Eye Position = #{feature.rightEyePosition.x}" if feature.hasRightEyePosition
-      p "Mouth Position = #{feature.mouthPosition.x}" if feature.hasMouthPosition
+      p "Found Feature!"
       
+      if feature.hasLeftEyePosition
+        draw_feature(currentContext, atPoint:feature.leftEyePosition)
+        p "Left Eye Coord: #{feature.leftEyePosition.x}x#{feature.leftEyePosition.y}"
+      end
       if feature.hasRightEyePosition
-        drawFeatureInContext(currentContext, atPoint:feature.leftEyePosition)
+        draw_feature(currentContext, atPoint:feature.rightEyePosition)
+        p "Right Eye Coord: #{feature.rightEyePosition.x}x#{feature.rightEyePosition.y}"
+      end
+      if feature.hasMouthPosition
+        draw_feature(currentContext, atPoint:feature.mouthPosition)
+        p "Mouth Coord: #{feature.mouthPosition.x}x#{feature.mouthPosition.y}"
       end
     end
 
-    newView = UIImageView.alloc.initWithFrame(view.bounds)
+    newView = UIImageView.alloc.initWithFrame([[0, 0], @me.size])
     newView.image = UIGraphicsGetImageFromCurrentImageContext()
     
     newView = UIImageView.alloc.initWithImage(UIGraphicsGetImageFromCurrentImageContext())
-    newView.frame = CGRectMake(0, 0, 200, 200)
+    newView.frame = CGRectMake(0, 0, @me.size.width, @me.size.height)
     
     UIGraphicsEndImageContext()
 
@@ -69,14 +75,11 @@ class RootController < UIViewController
     view.addSubview(newView)
   end
 
-  def drawFeatureInContext(context, atPoint:featurePoint)
-    p "Drawing circle"
-    radius = 1
-    p featurePoint.y
-    p featurePoint.y + radius
-    #CGContextAddArc(context, featurePoint.x, featurePoint.y, radius, 0, 3.14 * 2, 1)
-    CGContextAddRect(context, [[featurePoint.x, featurePoint.x + 1],[featurePoint.y, featurePoint.y + radius]])
-    #CGContextAddRect(context, [[5, 6],[100, 110]])
+  def draw_feature(context, atPoint:feature_point)
+    size = 6
+    startx = feature_point.x - (size/2)
+    starty = feature_point.y - (size/2)
+    CGContextAddRect(context, [[startx, starty], [size, size]])
     CGContextDrawPath(context, KCGPathFillStroke)
   end
 
