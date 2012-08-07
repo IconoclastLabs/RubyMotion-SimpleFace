@@ -39,13 +39,13 @@ class RootController < UIViewController
     features.each_with_index do |feature, index|
       
       # TODO: get some of this out of the loop
-      CGContextSetRGBFillColor(currentContext, 0, 0, 0, 0.5)
+      CGContextSetRGBFillColor(currentContext, 1, 1, 1, 0.4)
       CGContextSetStrokeColorWithColor(currentContext, UIColor.whiteColor.CGColor)
       CGContextSetLineWidth(currentContext, 2)
       CGContextAddRect(currentContext, feature.bounds)
       CGContextDrawPath(currentContext, KCGPathFillStroke)
 
-      CGContextSetRGBFillColor(currentContext, 1, 0 , 0, 0.4)
+      CGContextSetRGBFillColor(currentContext, 0, 1, 0, 0.4)
 
       p "Found Feature!"
       
