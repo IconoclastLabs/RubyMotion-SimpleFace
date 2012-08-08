@@ -16,7 +16,6 @@ class RootController < UIViewController
       print_features(features)
     end
 
-    #just_rects
   end
 
   private
@@ -32,10 +31,6 @@ class RootController < UIViewController
 
     scale = UIScreen.mainScreen.scale
 
-    if (scale > 1.0)
-      CGContextScaleCTM(currentContext, 0.5, 0.5)
-    end
-    
     features.each_with_index do |feature, index|
       
       # TODO: get some of this out of the loop
